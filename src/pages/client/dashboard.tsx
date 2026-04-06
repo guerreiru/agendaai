@@ -1,63 +1,21 @@
-import { useState, useEffect, useCallback } from "react";
-import type { Appointment, AppointmentStatus } from "../../types/booking";
+import { useCallback, useEffect, useState } from "react";
 import {
-  listMyAppointments,
-  confirmAppointment,
-  rejectAppointment,
   cancelAppointment,
+  confirmAppointment,
+  listMyAppointments,
+  rejectAppointment,
 } from "../../services/api/appointments";
+import type { Appointment } from "../../types/booking";
+import {
+  ACTIVE_STATUSES,
+  HISTORY_STATUSES,
+  STATUS_LABEL,
+  STATUS_VARIANT,
+  VARIANT_CLASS,
+} from "../../utils/constants";
 import { formatCurrency } from "../../utils/currency";
 import { formatDate } from "../../utils/formatDate";
 import { sanitizeUserInput } from "../../utils/sanitize";
-
-// ─── helpers ────────────────────────────────────────────────────────────────
-
-const STATUS_LABEL: Record<AppointmentStatus, string> = {
-  PENDING_CLIENT_CONFIRMATION: "Aguardando sua confirmação",
-  PENDING_PROFESSIONAL_CONFIRMATION: "Aguardando confirmação do profissional",
-  CONFIRMED: "Confirmado",
-  SCHEDULED: "Agendado",
-  CANCELLED: "Cancelado",
-  COMPLETED: "Concluído",
-  REJECTED: "Rejeitado",
-  NO_SHOW: "Não compareceu",
-};
-
-type BadgeVariant = "yellow" | "green" | "red" | "gray";
-
-const STATUS_VARIANT: Record<AppointmentStatus, BadgeVariant> = {
-  PENDING_CLIENT_CONFIRMATION: "yellow",
-  PENDING_PROFESSIONAL_CONFIRMATION: "yellow",
-  CONFIRMED: "green",
-  SCHEDULED: "green",
-  CANCELLED: "gray",
-  COMPLETED: "gray",
-  REJECTED: "red",
-  NO_SHOW: "gray",
-};
-
-const VARIANT_CLASS: Record<BadgeVariant, string> = {
-  yellow: "bg-yellow-100 text-yellow-800 border-yellow-300",
-  green: "bg-green-100 text-green-800 border-green-300",
-  red: "bg-red-100 text-red-800 border-red-300",
-  gray: "bg-gray-100 text-gray-700 border-gray-300",
-};
-
-const ACTIVE_STATUSES: AppointmentStatus[] = [
-  "PENDING_CLIENT_CONFIRMATION",
-  "PENDING_PROFESSIONAL_CONFIRMATION",
-  "CONFIRMED",
-  "SCHEDULED",
-];
-
-const HISTORY_STATUSES: AppointmentStatus[] = [
-  "COMPLETED",
-  "CANCELLED",
-  "REJECTED",
-  "NO_SHOW",
-];
-
-// ─── appointment card ────────────────────────────────────────────────────────
 
 interface AppointmentCardProps {
   appointment: Appointment;
@@ -131,7 +89,6 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
         canConfirmReject ? "border-yellow-400 shadow-md" : "border-gray-200"
       }`}
     >
-      {/* Header row */}
       <div className="flex items-start justify-between gap-4">
         <div className="space-y-0.5">
           <p className="font-semibold text-gray-900 text-base">
@@ -148,7 +105,6 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
         </span>
       </div>
 
-      {/* Info grid */}
       <div className="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
         <div>
           <p className="text-gray-500">Data</p>
@@ -170,7 +126,6 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
         </div>
       </div>
 
-      {/* Rejection reason (history) */}
       {appointment.status === "REJECTED" && appointment.rejectionReason && (
         <div className="rounded-md bg-red-50 border border-red-200 px-4 py-3 text-sm text-red-700">
           <span className="font-semibold">Motivo: </span>
@@ -178,10 +133,8 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
         </div>
       )}
 
-      {/* Action error */}
       {actionError && <p className="text-sm text-red-600">{actionError}</p>}
 
-      {/* Confirm / Reject */}
       {canConfirmReject && (
         <div className="space-y-2">
           {showRejectInput && (
@@ -216,7 +169,6 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
         </div>
       )}
 
-      {/* Cancel button (for active, non-confirmable appointments) */}
       {!isHistory && !canConfirmReject && canCancel && (
         <div className="flex justify-end">
           <button
@@ -290,7 +242,6 @@ export function ClientDashboardPage() {
     <div className="space-y-8">
       <h1 className="text-2xl font-bold text-slate-900">Meus Agendamentos</h1>
 
-      {/* Active / Upcoming */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
           Próximos e pendentes
@@ -306,7 +257,6 @@ export function ClientDashboardPage() {
         )}
       </section>
 
-      {/* History */}
       <section className="space-y-4">
         <h2 className="text-lg font-semibold text-gray-800 border-b pb-2">
           Histórico
