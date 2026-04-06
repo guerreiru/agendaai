@@ -4,6 +4,7 @@ import {
   searchPublicCompanies,
   type CompanySearchResult,
 } from "../../services/api/booking";
+import { FormField } from "../../components/ui/formField";
 
 export function BookingLandingPage() {
   const [query, setQuery] = useState("");
@@ -60,13 +61,12 @@ export function BookingLandingPage() {
 
       {/* search input */}
       <div className="relative">
-        <input
+        <FormField
           autoFocus
           type="search"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Buscar empresa por nome..."
-          className="w-full rounded-xl border border-slate-300 bg-white px-5 py-3 text-base shadow-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
         />
         {isLoading && (
           <span className="absolute right-4 top-1/2 -translate-y-1/2 text-sm text-slate-400">
