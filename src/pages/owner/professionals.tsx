@@ -30,8 +30,8 @@ const professionalSchema = z.object({
   displayName: z
     .string()
     .trim()
-    .min(2, "Nome publico deve ter ao menos 2 caracteres"),
-  email: z.email("Email invalido"),
+    .min(2, "Nome público deve ter ao menos 2 caracteres"),
+  email: z.email("Email inválido"),
   phone: z
     .string()
     .trim()
