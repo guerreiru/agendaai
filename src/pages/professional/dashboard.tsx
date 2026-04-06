@@ -13,6 +13,7 @@ import {
 import { listCompanyServices } from "../../services/api/services";
 import type { Appointment, AppointmentStatus } from "../../types/booking";
 import { formatCurrency } from "../../utils/currency";
+import { FormField } from "../../components/ui/formField";
 
 type PeriodFilter = "TODAY" | "NEXT_7_DAYS" | "THIS_MONTH" | "ALL";
 type StatusFilter =
@@ -481,8 +482,7 @@ export function ProfessionalDashboardPage() {
 
               {rejectingId === appointment.id ? (
                 <>
-                  <input
-                    className="min-w-55 flex-1 rounded-md border border-slate-300 px-2 py-1 text-xs"
+                  <FormField
                     onChange={(e) => setRejectReason(e.target.value)}
                     placeholder="Motivo opcional"
                     type="text"
@@ -696,8 +696,7 @@ export function ProfessionalDashboardPage() {
             <option value="NO_SHOW">Não compareceu</option>
           </select>
 
-          <input
-            className="rounded-md border border-slate-300 px-3 py-2 text-sm md:col-span-2"
+          <FormField
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Buscar cliente por nome ou email"
             value={search}
