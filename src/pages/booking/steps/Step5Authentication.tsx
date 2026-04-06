@@ -7,6 +7,7 @@ import type {
   BookingService,
   BookingProfessional,
 } from "../../../types/booking";
+import { FormField } from "../../../components/ui/formField";
 
 interface Step5Props {
   selectedService: BookingService;
@@ -234,39 +235,23 @@ export function Step5Authentication({
           onSubmit={loginForm.handleSubmit(handleLogin)}
           className="space-y-4"
         >
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Email
-            </label>
-            <input
-              {...loginForm.register("email")}
-              type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="seu@email.com"
-            />
-            {loginForm.formState.errors.email && (
-              <p className="text-red-600 text-sm mt-1">
-                {loginForm.formState.errors.email.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Email"
+            {...loginForm.register("email")}
+            type="email"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="seu@email.com"
+            error={loginForm.formState.errors.email}
+          />
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Senha
-            </label>
-            <input
-              {...loginForm.register("password")}
-              type="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="••••••"
-            />
-            {loginForm.formState.errors.password && (
-              <p className="text-red-600 text-sm mt-1">
-                {loginForm.formState.errors.password.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Senha"
+            {...loginForm.register("password")}
+            type="password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="••••••"
+            error={loginForm.formState.errors.password}
+          />
 
           <div className="flex justify-between gap-4 pt-4">
             <button
@@ -297,73 +282,41 @@ export function Step5Authentication({
           onSubmit={registerForm.handleSubmit(handleRegister)}
           className="space-y-4"
         >
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Nome completo
-            </label>
-            <input
-              {...registerForm.register("name")}
-              type="text"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="João Silva"
-            />
-            {registerForm.formState.errors.name && (
-              <p className="text-red-600 text-sm mt-1">
-                {registerForm.formState.errors.name.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Nome completo"
+            {...registerForm.register("name")}
+            type="text"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="João Silva"
+            error={registerForm.formState.errors.name}
+          />
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Email
-            </label>
-            <input
-              {...registerForm.register("email")}
-              type="email"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="seu@email.com"
-            />
-            {registerForm.formState.errors.email && (
-              <p className="text-red-600 text-sm mt-1">
-                {registerForm.formState.errors.email.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="E-mail"
+            {...registerForm.register("email")}
+            type="email"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="seu@email.com"
+            error={registerForm.formState.errors.email}
+          />
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Senha
-            </label>
-            <input
-              {...registerForm.register("password")}
-              type="password"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="••••••"
-            />
-            {registerForm.formState.errors.password && (
-              <p className="text-red-600 text-sm mt-1">
-                {registerForm.formState.errors.password.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Senha"
+            {...registerForm.register("password")}
+            type="password"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="••••••"
+            error={registerForm.formState.errors.password}
+          />
 
-          <div>
-            <label className="block text-sm font-semibold text-gray-700 mb-2">
-              Telefone (opcional)
-            </label>
-            <input
-              {...registerForm.register("phone")}
-              type="tel"
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
-              placeholder="+5511999999999"
-            />
-            {registerForm.formState.errors.phone && (
-              <p className="text-red-600 text-sm mt-1">
-                {registerForm.formState.errors.phone.message}
-              </p>
-            )}
-          </div>
+          <FormField
+            label="Telefone (opcional)"
+            {...registerForm.register("phone")}
+            type="tel"
+            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:border-blue-500"
+            placeholder="+5511999999999"
+            error={registerForm.formState.errors.phone}
+          />
 
           <div className="flex justify-between gap-4 pt-4">
             <button

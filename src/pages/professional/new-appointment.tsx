@@ -14,6 +14,7 @@ import type { Appointment, TimeSlot } from "../../types/booking";
 import type { Service } from "../../types/service";
 import { formatCurrency } from "../../utils/currency";
 import { sanitizeUserInput } from "../../utils/sanitize";
+import { FormField } from "../../components/ui/formField";
 
 type Step = 1 | 2 | 3 | 4;
 type CreateStatus = "idle" | "loading" | "success" | "error";
@@ -480,17 +481,12 @@ export function ProfessionalNewAppointmentPage() {
               </div>
             ) : (
               <>
-                <div>
-                  <label className="mb-1 block text-sm font-semibold text-slate-700">
-                    Buscar cliente por email ou telefone
-                  </label>
-                  <input
-                    className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-                    onChange={(e) => setSearchQuery(e.target.value)}
-                    placeholder="Digite email ou telefone"
-                    value={searchQuery}
-                  />
-                </div>
+                <FormField
+                  label="Buscar cliente por email ou telefone"
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Digite email ou telefone"
+                  value={searchQuery}
+                />
 
                 {searchLoading && (
                   <p className="text-sm text-slate-500">Buscando clientes...</p>
@@ -821,21 +817,23 @@ export function ProfessionalNewAppointmentPage() {
             </h3>
 
             <div className="mt-4 space-y-3">
-              <input
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              <FormField
                 onChange={(e) => setNewClientName(e.target.value)}
                 placeholder="Nome"
                 value={newClientName}
               />
-              <input
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              <FormField
                 onChange={(e) => setNewClientEmail(e.target.value)}
                 placeholder="Email"
                 type="email"
                 value={newClientEmail}
               />
-              <input
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
+              <FormField
+                onChange={(e) => setNewClientPhone(e.target.value)}
+                placeholder="Telefone (opcional)"
+                value={newClientPhone}
+              />
+              <FormField
                 onChange={(e) => setNewClientPhone(e.target.value)}
                 placeholder="Telefone (opcional)"
                 value={newClientPhone}

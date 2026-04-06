@@ -12,6 +12,7 @@ import type { Appointment, AppointmentStatus } from "../../types/booking";
 import { getUserCompanyId } from "../../utils/company";
 import { formatCurrency } from "../../utils/currency";
 import { sanitizeUserInput } from "../../utils/sanitize";
+import { FormField } from "../../components/ui/formField";
 
 // ─── types ────────────────────────────────────────────────────────────────────
 
@@ -460,12 +461,11 @@ export function OwnerAppointmentsPage() {
           <option value="NO_SHOW">Não compareceu</option>
         </select>
 
-        <input
+        <FormField
           type="text"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Buscar por cliente, profissional ou serviço..."
-          className="min-w-48 flex-1 rounded-lg border border-slate-300 px-3 py-1.5 text-sm focus:border-sky-500 focus:outline-none"
         />
       </div>
 
