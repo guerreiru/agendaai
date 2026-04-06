@@ -1,1 +1,10 @@
 @import "tailwindcss";
+
+@theme {
+  --color-lime-300: oklch(0.912 0.1651 120.53);
+  --color-orange-600: oklch(0.6729 0.2174 34.95);
+  --color-slate-950: oklch(0.1296 0.041 279.03);
+  --font-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
+  --font-jamjuree: "Bai Jamjuree", sans-serif;
+}
