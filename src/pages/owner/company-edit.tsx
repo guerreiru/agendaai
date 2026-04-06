@@ -14,6 +14,8 @@ import {
 import { toApiError } from "../../services/api";
 import { getUserCompanyId } from "../../utils/company";
 import { generateSlug } from "../../utils/slug";
+import { Select } from "../../components/ui/select";
+import { COMMON_TIMEZONES } from "../../utils/constants";
 
 const companyEditSchema = z.object({
   name: z.string().trim().min(2, "Nome deve ter ao menos 2 caracteres"),
@@ -31,27 +33,12 @@ const companyEditSchema = z.object({
     .optional()
     .refine(
       (v) => !v || /^\+[1-9]\d{7,14}$/.test(v),
-      "Telefone deve estar no formato E.164, ex: +5511999999999",
+      "Telefone deve estar no formato E.164, ex: 11999999999",
     ),
   timezone: z.string().min(1, "Timezone é obrigatório"),
 });
 
 type CompanyEditForm = z.infer<typeof companyEditSchema>;
-
-const COMMON_TIMEZONES = [
-  "America/Sao_Paulo",
-  "America/Manaus",
-  "America/Recife",
-  "America/Fortaleza",
-  "America/Cuiaba",
-  "America/Araguaina",
-  "America/Buenos_Aires",
-  "America/Bogota",
-  "America/Caracas",
-  "America/Guayaquil",
-  "America/Lima",
-  "UTC",
-];
 
 export function CompanyEditPage() {
   const navigate = useNavigate();
@@ -81,7 +68,6 @@ export function CompanyEditPage() {
     defaultValues: { name: "", slug: "", phone: "", timezone: "" },
   });
 
-  // Load current company data
   useEffect(() => {
     if (authLoading || !companyId) return;
 
@@ -107,21 +93,18 @@ export function CompanyEditPage() {
     void load();
   }, [authLoading, companyId, reset]);
 
-  // Auto-generate slug from name only if slug still matches the auto-generated version of the original name
   const nameValue = watch("name");
   const slugValue = watch("slug");
 
   useEffect(() => {
     if (!nameValue) return;
     const generated = generateSlug(nameValue);
-    // Only auto-update if the current slug is either the original or was previously auto-generated
+
     if (slugValue === originalSlug || slugValue === generateSlug(nameValue)) {
       setValue("slug", generated);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [nameValue]);
+  }, [nameValue, slugValue, originalSlug, setValue]);
 
-  // Slug availability check — skip if unchanged from original
   useEffect(() => {
     if (!slugValue || slugValue.length < 2) {
       setSlugAvailable(null);
@@ -302,22 +285,12 @@ export function CompanyEditPage() {
           >
             Timezone
           </label>
-          <select
-            className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+          <Select
             id="timezone"
             {...register("timezone")}
-          >
-            {COMMON_TIMEZONES.map((tz) => (
-              <option key={tz} value={tz}>
-                {tz}
-              </option>
-            ))}
-          </select>
-          {errors.timezone && (
-            <p className="mt-1 text-sm text-red-600">
-              {errors.timezone.message}
-            </p>
-          )}
+            error={errors.timezone}
+            options={COMMON_TIMEZONES}
+          />
         </div>
 
         <div className="flex gap-3 pt-4">
