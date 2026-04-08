@@ -22,7 +22,7 @@ export function Select({ label, error, options = [], ...props }: SelectProps) {
         </label>
       )}
       <select
-        className="w-full rounded-lg border border-gray-300 bg-white px-3 py-2 text-sm focus:border-sky-500 focus:outline-none focus:ring-2 focus:ring-sky-200"
+        className="w-full rounded-lg border border-gray-300 bg-white p-4 text-sm focus:border-orange-600 focus:outline-none focus:ring-2 focus:ring-orange-200"
         id={props.id}
         {...props}
       >
