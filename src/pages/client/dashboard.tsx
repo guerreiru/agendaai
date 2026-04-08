@@ -25,10 +25,14 @@ interface AppointmentCardProps {
 function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
   const [rejectReason, setRejectReason] = useState("");
   const [showRejectInput, setShowRejectInput] = useState(false);
+  const [cancelReason, setCancelReason] = useState("");
+  const [showCancelInput, setShowCancelInput] = useState(false);
   const [isActing, setIsActing] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
   const variant = STATUS_VARIANT[appointment.status];
+
+  console.log(appointment);
 
   const canConfirmReject =
     appointment.status === "PENDING_CLIENT_CONFIRMATION" &&
@@ -70,11 +74,14 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
   }
 
   async function handleCancel() {
-    if (!confirm("Tem certeza que deseja cancelar este agendamento?")) return;
+    if (!showCancelInput) {
+      setShowCancelInput(true);
+      return;
+    }
     setIsActing(true);
     setActionError(null);
     try {
-      await cancelAppointment(appointment.id);
+      await cancelAppointment(appointment.id, cancelReason || undefined);
       onAction();
     } catch {
       setActionError("Erro ao cancelar. Tente novamente.");
@@ -90,14 +97,9 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
       }`}
     >
       <div className="flex items-start justify-between gap-4">
-        <div className="space-y-0.5">
-          <p className="font-semibold text-gray-900 text-base">
-            {appointment.serviceId}
-          </p>
-          <p className="text-sm text-gray-500">
-            Profissional: {sanitizeUserInput(appointment.professional.name)}
-          </p>
-        </div>
+        <p className="text-sm text-gray-500">
+          Profissional: {sanitizeUserInput(appointment.professional.name)}
+        </p>
         <span
           className={`shrink-0 rounded-full border px-3 py-0.5 text-xs font-semibold ${VARIANT_CLASS[variant]}`}
         >
@@ -148,6 +150,7 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
           )}
           <div className="flex gap-3">
             <button
+              type="button"
               onClick={() => void handleConfirm()}
               disabled={isActing}
               className="flex-1 rounded-lg bg-green-600 px-4 py-2 text-sm font-semibold text-white hover:bg-green-700 disabled:opacity-50"
@@ -155,6 +158,7 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
               {isActing ? "..." : "✓ Confirmar"}
             </button>
             <button
+              type="button"
               onClick={() => void handleReject()}
               disabled={isActing}
               className="flex-1 rounded-lg border border-red-500 px-4 py-2 text-sm font-semibold text-red-600 hover:bg-red-50 disabled:opacity-50"
@@ -170,14 +174,43 @@ function AppointmentCard({ appointment, onAction }: AppointmentCardProps) {
       )}
 
       {!isHistory && !canConfirmReject && canCancel && (
-        <div className="flex justify-end">
-          <button
-            onClick={() => void handleCancel()}
-            disabled={isActing}
-            className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
-          >
-            {isActing ? "Cancelando..." : "Cancelar agendamento"}
-          </button>
+        <div className="space-y-2">
+          {showCancelInput && (
+            <textarea
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:border-red-400"
+              placeholder="Motivo do cancelamento (opcional)"
+              rows={2}
+              value={cancelReason}
+              onChange={(e) => setCancelReason(e.target.value)}
+            />
+          )}
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={() => void handleCancel()}
+              disabled={isActing}
+              className="flex-1 rounded-lg px-4 py-2 text-sm font-semibold text-gray-500 hover:text-red-600 hover:bg-red-50 disabled:opacity-50 transition-colors"
+            >
+              {isActing
+                ? "Cancelando..."
+                : showCancelInput
+                  ? "Confirmar cancelamento"
+                  : "Cancelar agendamento"}
+            </button>
+            {showCancelInput && (
+              <button
+                type="button"
+                onClick={() => {
+                  setShowCancelInput(false);
+                  setCancelReason("");
+                }}
+                disabled={isActing}
+                className="rounded-lg px-4 py-2 text-sm font-semibold text-gray-600 border border-gray-300 hover:bg-gray-50 disabled:opacity-50"
+              >
+                Fechar
+              </button>
+            )}
+          </div>
         </div>
       )}
     </div>
@@ -229,6 +262,7 @@ export function ClientDashboardPage() {
       <div className="rounded-xl border border-red-200 bg-red-50 p-6 text-center">
         <p className="text-red-700 font-semibold">{error}</p>
         <button
+          type="button"
           onClick={() => void load()}
           className="mt-4 rounded-lg bg-red-600 px-4 py-2 text-sm text-white hover:bg-red-700"
         >
