@@ -3,10 +3,10 @@ import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
+import Fox from "../../assets/fox.svg";
 import { FormField } from "../../components/ui/formField";
 import { useAuth } from "../../hooks/useAuth";
 import { getRoleDashboardPath } from "../../routes/role-redirect";
-import Fox from "../../assets/fox.svg";
 
 const loginSchema = z.object({
   email: z.email("Email inválido"),
@@ -54,20 +54,33 @@ export function LoginPage() {
 
   return (
     <section className="flex min-h-dvh bg-white">
-      <aside className="hidden flex-1 flex-col items-center justify-center gap-8 bg-slate-950 p-10 md:flex md:max-w-[33.333333%]">
-        <div className="grid place-items-center">
+      <aside className="hidden flex-1 flex-col justify-between gap-8 bg-slate-950 p-10 md:flex md:max-w-1/3">
+        <div className="">
           <img src={Fox} alt="Fox" />
           <div className="flex items-center text-lg font-bold">
             <p className="font-jamjuree text-orange-600">PLA</p>
             <p className="font-jamjuree text-white">NNIE</p>
           </div>
+          <p className="text-slate-500 text-xs">Sistema de Agendamento</p>
         </div>
 
-        <h1 className="font-jakarta text-white">
-          Dê adeus às anotações no papel e descubra como é simples planejar com
-          o Plannie!
-        </h1>
+        <div>
+          <h1 className="font-jakarta text-white text-4xl leading-tight">
+            Bem-vindo de
+          </h1>
+          <span className="font-jakarta text-4xl leading-tight text-lime-300">
+            volta
+          </span>
+          <p className="text-slate-500">
+            Acesse sua conta e gerencie seus agendamentos
+          </p>
+        </div>
+
+        <p className="text-slate-500 text-xs">
+          © 2024 PLANNIE. Todos os direitos reservados.
+        </p>
       </aside>
+
       <main className="grid flex-1 place-items-center px-6 py-10">
         <div className="w-full max-w-md">
           <h2 className="mb-6 text-3xl font-medium">Entrar</h2>
