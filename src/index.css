@@ -1,10 +1,15 @@
 @import "tailwindcss";
 
 @theme {
+  --color-gray-200: oklch(0.928 0.0058 264.53);
+  --color-gray-500: oklch(0.551 0.0234 264.36);
+  --color-gray-700: oklch(0.373 0.0306 259.73);
   --color-lime-300: oklch(0.912 0.1651 120.53);
   --color-orange-600: oklch(0.6729 0.2174 34.95);
+  --color-slate-500: oklch(0.5071 0.06 273.54);
   --color-slate-950: oklch(0.1296 0.041 279.03);
+  --color-violet-400: oklch(0.6955 0.1293 294.15);
   --font-jakarta: "Plus Jakarta Sans", sans-serif;
-  --font-poppins: "Poppins", sans-serif;
   --font-jamjuree: "Bai Jamjuree", sans-serif;
+  --font-poppins: "Poppins", sans-serif;
 }
