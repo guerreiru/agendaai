@@ -14,17 +14,9 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (!id.includes("node_modules")) {
-            return;
-          }
+          if (!id.includes("node_modules")) return;
 
-          if (id.includes("react-router-dom")) {
-            return "router";
-          }
-
-          if (id.includes("react") || id.includes("scheduler")) {
-            return "react-vendor";
-          }
+          if (id.includes("react-router-dom")) return "router";
 
           if (
             id.includes("zod") ||
@@ -36,6 +28,14 @@ export default defineConfig({
 
           if (id.includes("axios") || id.includes("@tanstack/react-query")) {
             return "data";
+          }
+
+          if (
+            id.includes("/react/") ||
+            id.includes("/react-dom/") ||
+            id.includes("/scheduler/")
+          ) {
+            return "react-vendor";
           }
 
           return "vendor";
