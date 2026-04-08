@@ -6,8 +6,8 @@ export function ProtectedRoute() {
 
   if (isLoading) {
     return (
-      <div className="grid min-h-[40vh] place-items-center text-slate-600">
-        Validando sessao...
+      <div className="grid h-dvh place-items-center text-slate-600">
+        Validando sessão...
       </div>
     );
   }
