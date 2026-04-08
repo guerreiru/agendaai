@@ -1,20 +1,21 @@
+import { useQuery, useQueryClient } from "@tanstack/react-query";
 import {
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-  type PropsWithChildren,
+	type PropsWithChildren,
+	useCallback,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
 } from "react";
+import { configureApiInterceptors, toApiError } from "../../services/api";
+import {
+	loginRequest,
+	logoutRequest,
+	meRequest,
+	refreshRequest,
+} from "../../services/api/auth";
 import type { ApiError } from "../../types/api";
 import type { User } from "../../types/user";
-import {
-  loginRequest,
-  logoutRequest,
-  meRequest,
-  refreshRequest,
-} from "../../services/api/auth";
-import { configureApiInterceptors, toApiError } from "../../services/api";
 import { AuthContext, type AuthContextValue } from "./auth-context";
 
 /**
@@ -23,148 +24,177 @@ import { AuthContext, type AuthContextValue } from "./auth-context";
  * Refresh token is stored in HttpOnly cookie by backend.
  */
 export function AuthProvider({ children }: PropsWithChildren) {
-  const [user, setUser] = useState<User | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<ApiError | null>(null);
+	const [user, setUser] = useState<User | null>(null);
+	const [accessToken, setAccessToken] = useState<string | null>(null);
+	const [isLoading, setIsLoading] = useState(true);
+	const [error, setError] = useState<ApiError | null>(null);
 
-  const accessTokenRef = useRef<string | null>(accessToken);
-  const refreshLockRef = useRef<Promise<string | null> | null>(null);
+	const accessTokenRef = useRef<string | null>(accessToken);
+	const refreshLockRef = useRef<Promise<string | null> | null>(null);
+	const queryClient = useQueryClient();
 
-  useEffect(() => {
-    accessTokenRef.current = accessToken;
-  }, [accessToken]);
+	useEffect(() => {
+		accessTokenRef.current = accessToken;
+	}, [accessToken]);
 
-  const clearSessionLocal = useCallback(() => {
-    setAccessToken(null);
-    setUser(null);
-  }, []);
+	const clearSessionLocal = useCallback(() => {
+		setAccessToken(null);
+		setUser(null);
+		queryClient.invalidateQueries({ queryKey: ["auth", "me"] });
+	}, [queryClient]);
 
-  const getCurrentUser = useCallback(async (): Promise<User | null> => {
-    try {
-      const currentUser = await meRequest();
-      setUser(currentUser);
-      return currentUser;
-    } catch (err) {
-      const parsedError = toApiError(err);
-      setError(parsedError);
-      return null;
-    }
-  }, []);
-  const refreshToken = useCallback(async (): Promise<string | null> => {
-    if (refreshLockRef.current) {
-      return refreshLockRef.current;
-    }
+	// Use React Query to manage getCurrentUser with automatic deduplication
+	const { data: currentUserData } = useQuery({
+		queryKey: ["auth", "me"],
+		queryFn: () => meRequest(accessToken ?? undefined),
+		enabled: Boolean(accessToken),
+		staleTime: 10 * 60 * 1000, // 10 minutes
+		retry: false,
+	});
 
-    refreshLockRef.current = (async () => {
-      try {
-        const response = await refreshRequest();
-        setAccessToken(response.accessToken);
-        setError(null);
-        return response.accessToken;
-      } catch {
-        clearSessionLocal();
-        return null;
-      } finally {
-        refreshLockRef.current = null;
-      }
-    })();
+	const getCurrentUser = useCallback(
+		async (token?: string): Promise<User | null> => {
+			try {
+				const currentUser = await meRequest(token);
+				setUser(currentUser);
+				queryClient.setQueryData(["auth", "me"], currentUser);
+				return currentUser;
+			} catch (err) {
+				const parsedError = toApiError(err);
+				if (parsedError.statusCode === 401) {
+					clearSessionLocal();
+				}
+				setError(parsedError);
+				return null;
+			}
+		},
+		[clearSessionLocal, queryClient],
+	);
+	const refreshToken = useCallback(async (): Promise<string | null> => {
+		if (refreshLockRef.current) {
+			return refreshLockRef.current;
+		}
 
-    return refreshLockRef.current;
-  }, [clearSessionLocal]);
+		refreshLockRef.current = (async () => {
+			try {
+				const response = await refreshRequest();
+				accessTokenRef.current = response.accessToken;
+				setAccessToken(response.accessToken);
+				setError(null);
+				return response.accessToken;
+			} catch {
+				clearSessionLocal();
+				return null;
+			} finally {
+				refreshLockRef.current = null;
+			}
+		})();
 
-  const login = useCallback(
-    async (email: string, password: string): Promise<void> => {
-      setIsLoading(true);
-      setError(null);
+		return refreshLockRef.current;
+	}, [clearSessionLocal]);
 
-      try {
-        const response = await loginRequest({ email, password });
-        setAccessToken(response.accessToken);
+	const login = useCallback(
+		async (email: string, password: string): Promise<void> => {
+			setIsLoading(true);
+			setError(null);
 
-        const currentUser = await meRequest();
-        setUser(currentUser);
-      } catch (err) {
-        clearSessionLocal();
-        setError(toApiError(err));
-        throw err;
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [clearSessionLocal],
-  );
+			try {
+				const response = await loginRequest({ email, password });
+				accessTokenRef.current = response.accessToken;
+				setAccessToken(response.accessToken);
 
-  const logout = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
+				const currentUser = await meRequest(response.accessToken);
+				setUser(currentUser);
+				queryClient.setQueryData(["auth", "me"], currentUser);
+			} catch (err) {
+				clearSessionLocal();
+				setError(toApiError(err));
+				throw err;
+			} finally {
+				setIsLoading(false);
+			}
+		},
+		[clearSessionLocal, queryClient],
+	);
 
-    try {
-      await logoutRequest();
-    } catch {
-      // Local cleanup still happens even if backend already invalidated session.
-    } finally {
-      clearSessionLocal();
-      setError(null);
-      setIsLoading(false);
-    }
-  }, [clearSessionLocal]);
+	const logout = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
 
-  const initAuth = useCallback(async (): Promise<void> => {
-    setIsLoading(true);
+		try {
+			await logoutRequest();
+		} catch {
+			// Local cleanup still happens even if backend already invalidated session.
+		} finally {
+			clearSessionLocal();
+			setError(null);
+			setIsLoading(false);
+		}
+	}, [clearSessionLocal]);
 
-    try {
-      const token = await refreshToken();
+	const initAuth = useCallback(async (): Promise<void> => {
+		setIsLoading(true);
 
-      if (!token) {
-        clearSessionLocal();
-        setError(null);
-        return;
-      }
+		try {
+			const token = await refreshToken();
 
-      await getCurrentUser();
-      setError(null);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [clearSessionLocal, getCurrentUser, refreshToken]);
+			if (!token) {
+				clearSessionLocal();
+				setError(null);
+				return;
+			}
 
-  useEffect(() => {
-    configureApiInterceptors({
-      getAccessToken: () => accessTokenRef.current,
-      refreshToken,
-      onAuthFailure: clearSessionLocal,
-    });
-  }, [clearSessionLocal, refreshToken]);
+			await getCurrentUser(token);
 
-  useEffect(() => {
-    void initAuth();
-  }, [initAuth]);
+			setError(null);
+		} finally {
+			setIsLoading(false);
+		}
+	}, [clearSessionLocal, getCurrentUser, refreshToken]);
 
-  const value = useMemo<AuthContextValue>(
-    () => ({
-      user,
-      accessToken,
-      isAuthenticated: Boolean(user && accessToken),
-      isLoading,
-      error,
-      login,
-      logout,
-      refreshToken,
-      getCurrentUser,
-      initAuth,
-    }),
-    [
-      user,
-      accessToken,
-      isLoading,
-      error,
-      login,
-      logout,
-      refreshToken,
-      getCurrentUser,
-      initAuth,
-    ],
-  );
+	// Sync currentUserData with setUser when it updates
+	useEffect(() => {
+		if (currentUserData) {
+			setUser(currentUserData);
+		}
+	}, [currentUserData]);
 
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+	useEffect(() => {
+		configureApiInterceptors({
+			getAccessToken: () => accessTokenRef.current,
+			refreshToken,
+			onAuthFailure: clearSessionLocal,
+		});
+	}, [clearSessionLocal, refreshToken]);
+
+	useEffect(() => {
+		void initAuth();
+	}, [initAuth]);
+
+	const value = useMemo<AuthContextValue>(
+		() => ({
+			user,
+			accessToken,
+			isAuthenticated: Boolean(user && accessToken),
+			isLoading,
+			error,
+			login,
+			logout,
+			refreshToken,
+			getCurrentUser,
+			initAuth,
+		}),
+		[
+			user,
+			accessToken,
+			isLoading,
+			error,
+			login,
+			logout,
+			refreshToken,
+			getCurrentUser,
+			initAuth,
+		],
+	);
+
+	return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
