@@ -1,16 +1,16 @@
 type UserCompanyShape = {
-  companyId?: string | null;
-  ownedCompany?: Array<{ id: string }>;
+	companyId?: string | null;
+	ownedCompany?: Array<{ id: string }>;
 };
 
 export function getUserCompanyId(
-  user: UserCompanyShape | null | undefined,
+	user: UserCompanyShape | null | undefined,
 ): string | null {
-  return user?.companyId ?? user?.ownedCompany?.[0]?.id ?? null;
+	return user?.companyId ?? user?.ownedCompany?.[0]?.id ?? null;
 }
 
 export function hasUserCompany(
-  user: UserCompanyShape | null | undefined,
+	user: UserCompanyShape | null | undefined,
 ): boolean {
-  return Boolean(getUserCompanyId(user));
+	return Boolean(getUserCompanyId(user));
 }
