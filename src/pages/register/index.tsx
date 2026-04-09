@@ -5,8 +5,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Fox from "../../assets/fox.svg";
 import { FormField } from "../../components/ui/formField";
+import { PhoneField } from "../../components/ui/phoneField";
 import { api, toApiError } from "../../services/api";
-import { Select } from "../../components/ui/select";
 
 const registerSchema = z
   .object({
@@ -35,6 +35,7 @@ export function RegisterPage() {
     register,
     handleSubmit,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -158,33 +159,16 @@ export function RegisterPage() {
               placeholder="Seu nome"
             />
 
-            <div>
-              <label
-                className="block text-sm font-medium text-gray-700 mb-2"
-                htmlFor="phone"
-              >
-                Telefone
-              </label>
-
-              <div className="flex items-center gap-3">
-                <Select
-                  options={[
-                    {
-                      label: "Brasil (+55)",
-                      value: "+55",
-                    },
-                  ]}
-                />
-                <FormField
-                  id="phone"
-                  autoComplete="tel"
-                  type="text"
-                  {...register("phone")}
-                  error={errors.phone}
-                  placeholder="(99) 99999-9999"
-                />
-              </div>
-            </div>
+            <PhoneField
+              label="Telefone"
+              placeholder="(99) 99999-9999"
+              error={errors.phone?.message}
+              onChange={(value) => {
+                if (typeof value === 'string') {
+                  setValue("phone", value || "");
+                }
+              }}
+            />
 
             <FormField
               label="Email"

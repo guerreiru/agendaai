@@ -19,6 +19,7 @@ export function Select({ label, error, options = [], ...props }: SelectProps) {
           htmlFor={props.id}
         >
           {label}
+          {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
       <select
