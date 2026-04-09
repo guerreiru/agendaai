@@ -1,48 +1,60 @@
 import type { InputHTMLAttributes } from "react";
 import type { FieldError } from "react-hook-form";
-import PhoneInput, { type Value } from "react-phone-number-input";
+import PhoneInput from "react-phone-number-input";
 import "react-phone-number-input/style.css";
+import { FormField } from "./formField";
 
-type PhoneFieldProps = InputHTMLAttributes<HTMLInputElement> & {
+type PhoneFieldProps = Omit<
+  InputHTMLAttributes<HTMLInputElement>,
+  "value" | "onChange" | "type"
+> & {
   label?: string;
   error?: string | FieldError;
-  value?: Value;
-  onChange: (value: Value) => void;
+  defaultValue?: string;
+  value?: string;
+  onChange?: (value: string | undefined) => void;
 };
 
 export function PhoneField({
-  value,
-  onChange,
   label,
   error,
-  id,
-  className,
+  disabled,
+  placeholder = "Enter phone number",
+  defaultValue,
+  value,
+  onChange,
   ...props
 }: PhoneFieldProps) {
-  const baseClass = `w-full p-4 text-sm border focus:border-orange-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 ${
-    error ? "border-red-400" : "border-gray-300"
-  } ${className ?? ""}`;
+  const handleChange = (val: string | undefined) => {
+    onChange?.(val);
+  };
 
   return (
-    <div className="flex flex-col gap-1">
+    <div className="w-full space-y-2">
       {label && (
-        <label className="text-sm font-medium text-gray-700" htmlFor={id}>
+        <label
+          className="block text-sm font-medium text-gray-700"
+          htmlFor={props.id}
+        >
           {label}
+          {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
-
       <PhoneInput
+        id={props.id}
         international
-        defaultCountry="BR"
+        countryCallingCodeEditable={false}
+        defaultValue={defaultValue}
         value={value}
-        onChange={onChange}
-        className={baseClass}
-        id={id}
-        {...props}
+        onChange={handleChange}
+        disabled={disabled}
+        placeholder={placeholder}
+        defaultCountry="BR"
+        autoComplete="tel"
+        inputComponent={(inputProps) => <FormField {...inputProps} />}
       />
-
       {error && (
-        <p className="text-red-600 text-sm mt-1">
+        <p className="text-red-600 text-sm">
           {typeof error === "string" ? error : error.message}
         </p>
       )}
