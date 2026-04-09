@@ -18,7 +18,7 @@ export function FormField({
   mask,
   ref,
   onChange,
-  ...inputProps
+  ...props
 }: FormFieldProps) {
   const baseClass = `w-full p-4 text-sm border focus:border-orange-600 rounded-lg focus:outline-none focus:ring-2 focus:ring-orange-200 ${
     error ? "border-red-400" : "border-gray-300"
@@ -29,9 +29,10 @@ export function FormField({
       {label && (
         <label
           className="block text-sm font-medium text-gray-700 mb-2"
-          htmlFor={inputProps.id}
+          htmlFor={props.id}
         >
           {label}
+          {props.required && <span className="text-red-500 ml-1">*</span>}
         </label>
       )}
 
@@ -42,18 +43,13 @@ export function FormField({
           inputRef={ref}
           onAccept={(value) => {
             onChange?.({
-              target: { value, name: inputProps.name ?? "" },
+              target: { value, name: props.name ?? "" },
             } as React.ChangeEvent<HTMLInputElement>);
           }}
-          {...inputProps}
+          {...props}
         />
       ) : (
-        <input
-          className={baseClass}
-          ref={ref}
-          onChange={onChange}
-          {...inputProps}
-        />
+        <input className={baseClass} ref={ref} onChange={onChange} {...props} />
       )}
 
       {error && (
