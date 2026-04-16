@@ -66,7 +66,6 @@ export function Step4SelectTime({
 
 	return (
 		<div className="space-y-8">
-			{/* Summary */}
 			<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
 				<div>
 					<p className="text-sm text-gray-600">Serviço:</p>
@@ -86,7 +85,6 @@ export function Step4SelectTime({
 				</div>
 			</div>
 
-			{/* Select Time */}
 			<div>
 				<h2 className="text-2xl font-semibold text-gray-900 mb-4">
 					Escolha um Horário
@@ -134,7 +132,6 @@ export function Step4SelectTime({
 				)}
 			</div>
 
-			{/* Buttons */}
 			<div className="flex justify-between gap-4">
 				<button
 					type="button"

@@ -78,7 +78,6 @@ export function Step6Confirmation({
 	if (appointment) {
 		return (
 			<div className="space-y-8">
-				{/* Success Message */}
 				<div
 					className={`border-2 rounded-lg p-6 text-center ${getAppointmentStatusPanelClass(appointment.status)}`}
 				>
@@ -98,7 +97,6 @@ export function Step6Confirmation({
 					</p>
 				</div>
 
-				{/* Booking Details */}
 				<div className="bg-white border border-gray-200 rounded-lg p-6 space-y-4">
 					<h2 className="text-2xl font-semibold text-gray-900 mb-6">
 						Detalhes do Agendamento
@@ -161,7 +159,6 @@ export function Step6Confirmation({
 					</div>
 				</div>
 
-				{/* Next Steps */}
 				<div className="bg-blue-50 border border-blue-200 rounded-lg p-6">
 					<h3 className="font-semibold text-gray-900 mb-3">Próximas etapas</h3>
 					<ul className="space-y-2 text-sm text-gray-700">
@@ -187,7 +184,6 @@ export function Step6Confirmation({
 					</ul>
 				</div>
 
-				{/* Action Buttons */}
 				<div className="flex flex-col gap-3">
 					<Link
 						to="/client/dashboard"
@@ -207,10 +203,8 @@ export function Step6Confirmation({
 		);
 	}
 
-	// Review before confirmation
 	return (
 		<div className="space-y-8">
-			{/* Summary */}
 			<div>
 				<h2 className="text-2xl font-semibold text-gray-900 mb-4">
 					Confirme seus dados
@@ -268,7 +262,6 @@ export function Step6Confirmation({
 				</div>
 			</div>
 
-			{/* Buttons */}
 			<div className="flex justify-between gap-4">
 				<button
 					type="button"

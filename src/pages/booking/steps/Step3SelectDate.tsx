@@ -44,7 +44,7 @@ export function Step3SelectDate({
 
 	const formatDateForAPI = (day: number): string => {
 		const date = new Date(month.getFullYear(), month.getMonth(), day);
-		return date.toISOString().split("T")[0]; // YYYY-MM-DD
+		return date.toISOString().split("T")[0];
 	};
 
 	const days = Array.from({ length: getDaysInMonth(month) }, (_, i) => i + 1);
@@ -68,7 +68,6 @@ export function Step3SelectDate({
 
 	return (
 		<div className="space-y-8">
-			{/* Summary */}
 			<div className="bg-blue-50 border border-blue-200 rounded-lg p-4 space-y-2">
 				<div>
 					<p className="text-sm text-gray-600">Serviço:</p>
@@ -82,14 +81,12 @@ export function Step3SelectDate({
 				</div>
 			</div>
 
-			{/* Calendar */}
 			<div>
 				<h2 className="text-2xl font-semibold text-gray-900 mb-4">
 					Escolha uma Data
 				</h2>
 
 				<div className="bg-white border border-gray-200 rounded-lg p-6">
-					{/* Month Navigation */}
 					<div className="flex items-center justify-between mb-6">
 						<button
 							type="button"
@@ -112,7 +109,6 @@ export function Step3SelectDate({
 						</button>
 					</div>
 
-					{/* Weekday Headers */}
 					<div className="grid grid-cols-7 gap-2 mb-4">
 						{["Dom", "Seg", "Ter", "Qua", "Qui", "Sex", "Sab"].map((day) => (
 							<div
@@ -124,7 +120,6 @@ export function Step3SelectDate({
 						))}
 					</div>
 
-					{/* Days Grid */}
 					<div className="grid grid-cols-7 gap-2">
 						{emptyDays.map((day) => (
 							<div key={`empty-${day}`} />
@@ -165,7 +160,6 @@ export function Step3SelectDate({
 				)}
 			</div>
 
-			{/* Buttons */}
 			<div className="flex justify-between gap-4">
 				<button
 					type="button"

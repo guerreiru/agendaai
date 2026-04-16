@@ -48,7 +48,6 @@ export function Step1SelectService({
 
 	return (
 		<div className="space-y-8">
-			{/* Company Header */}
 			<div className="bg-linear-to-r from-blue-50 to-indigo-50 rounded-lg p-8 border border-blue-200">
 				<h1 className="text-4xl font-bold text-gray-900 mb-2">
 					{sanitizeUserInput(company.name)}
@@ -58,7 +57,6 @@ export function Step1SelectService({
 				</p>
 			</div>
 
-			{/* Select Service */}
 			<div>
 				<h2 className="text-2xl font-semibold text-gray-900 mb-4">
 					Nossos serviços
@@ -95,7 +93,6 @@ export function Step1SelectService({
 				</div>
 			</div>
 
-			{/* Buttons */}
 			<div className="flex justify-end gap-4">
 				<Link
 					to="/client/booking"

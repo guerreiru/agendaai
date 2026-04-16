@@ -52,19 +52,16 @@ export function Step2SelectProfessional({
 		);
 	}
 
-	// Get professionals that offer the selected service
 	const availableProfessionals = company.professionals.filter((prof) => {
 		return professionalServices.some((ps) => ps.professionalId === prof.id);
 	});
 
-	// Create a map of professional ID to service price
 	const professionalPriceMap = new Map(
 		professionalServices.map((ps) => [ps.professionalId, ps.price]),
 	);
 
 	return (
 		<div className="space-y-8">
-			{/* Service Summary */}
 			<div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
 				<p className="text-sm text-gray-600">Serviço selecionado:</p>
 				<p className="font-semibold text-gray-900">
@@ -75,7 +72,6 @@ export function Step2SelectProfessional({
 				</p>
 			</div>
 
-			{/* Select Professional */}
 			<div>
 				<h2 className="text-2xl font-semibold text-gray-900 mb-4">
 					Escolha um Profissional
@@ -143,7 +139,6 @@ export function Step2SelectProfessional({
 				)}
 			</div>
 
-			{/* Buttons */}
 			<div className="flex justify-between gap-4">
 				<button
 					type="button"
