@@ -7,24 +7,24 @@ import { appointmentDateTime } from "./formatDate";
  * Returns an array of [dayKey, items] tuples.
  */
 export function groupAppointmentsByDay(
-  items: Appointment[],
+	items: Appointment[],
 ): [string, Appointment[]][] {
-  const sorted = [...items].sort(
-    (a, b) =>
-      appointmentDateTime(a.date, a.startTime).getTime() -
-      appointmentDateTime(b.date, b.startTime).getTime(),
-  );
+	const sorted = [...items].sort(
+		(a, b) =>
+			appointmentDateTime(a.date, a.startTime).getTime() -
+			appointmentDateTime(b.date, b.startTime).getTime(),
+	);
 
-  const groups = new Map<string, Appointment[]>();
-  for (const appointment of sorted) {
-    const dayKey = appointment.date.slice(0, 10);
-    const dayGroup = groups.get(dayKey);
-    if (dayGroup) {
-      dayGroup.push(appointment);
-    } else {
-      groups.set(dayKey, [appointment]);
-    }
-  }
+	const groups = new Map<string, Appointment[]>();
+	for (const appointment of sorted) {
+		const dayKey = appointment.date.slice(0, 10);
+		const dayGroup = groups.get(dayKey);
+		if (dayGroup) {
+			dayGroup.push(appointment);
+		} else {
+			groups.set(dayKey, [appointment]);
+		}
+	}
 
-  return Array.from(groups.entries());
+	return Array.from(groups.entries());
 }
