@@ -4,26 +4,26 @@ export type PeriodFilter = "ALL" | "TODAY" | "NEXT_7_DAYS" | "THIS_MONTH";
 export type StatusFilter = "ALL" | AppointmentStatus;
 
 export type AppointmentCardProps = {
-  appointment: Appointment;
-  serviceName: string;
-  onRefresh: () => void;
+	appointment: Appointment;
+	serviceName: string;
+	onRefresh: () => void;
 };
 
 export type AppointmentStatusTransitionMap = Partial<
-  Record<AppointmentStatus, string>
+	Record<AppointmentStatus, string>
 >;
 
 export type AppointmentActionButtonVariant =
-  | "default"
-  | "secondary"
-  | "outline"
-  | "ghost"
-  | "destructive"
-  | "success"
-  | "warning";
+	| "default"
+	| "secondary"
+	| "outline"
+	| "ghost"
+	| "destructive"
+	| "success"
+	| "warning";
 
 export type AppointmentTransitionVariantMap = Partial<
-  Record<AppointmentStatus, AppointmentActionButtonVariant>
+	Record<AppointmentStatus, AppointmentActionButtonVariant>
 >;
 
 export type TerminalAppointmentStatus = AppointmentStatus[];
