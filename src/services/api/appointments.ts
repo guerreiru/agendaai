@@ -1,8 +1,12 @@
 import type { Appointment, AppointmentStatus } from "../../types/booking";
 import { api } from "./client";
 
-export async function listMyAppointments(): Promise<Appointment[]> {
-	const response = await api.get<Appointment[]>("/appointments");
+export async function listMyAppointments(startDate?: string, endDate?: string): Promise<Appointment[]> {
+	const params = new URLSearchParams();
+	if (startDate) params.append('startDate', startDate);
+	if (endDate) params.append('endDate', endDate);
+	const query = params.toString() ? `?${params.toString()}` : '';
+	const response = await api.get<Appointment[]>(`/appointments${query}`);
 	return Array.isArray(response.data) ? response.data : [];
 }
 

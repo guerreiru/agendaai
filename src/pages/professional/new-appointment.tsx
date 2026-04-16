@@ -1,11 +1,11 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import type { AxiosError } from "axios";
 import { useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormField } from "../../components/ui/formField";
 import { useAuth } from "../../hooks/useAuth";
+import { useApiError } from "../../hooks/useApiError";
 import {
 	type ClientSearchResult,
 	createAppointmentByProfessional,
@@ -17,6 +17,7 @@ import {
 import type { Appointment, TimeSlot } from "../../types/booking";
 import type { Service } from "../../types/service";
 import { formatCurrency } from "../../utils/currency";
+import { getAppointmentStatusLabelSafe } from "../../utils/appointmentStatus";
 import { sanitizeUserInput } from "../../utils/sanitize";
 
 type Step = 1 | 2 | 3 | 4;
@@ -52,64 +53,6 @@ function isValidPhone(input: string): boolean {
 	const digits = input.replace(/\D/g, "");
 	return digits.length >= 10 && digits.length <= 11;
 }
-
-function toErrorMessage(error: unknown): string {
-	const status = (error as AxiosError<{ message?: string }>).response?.status;
-	const message = (error as AxiosError<{ message?: string }>).response?.data
-		?.message;
-
-	if (message) {
-		return message;
-	}
-
-	if (status === 409) {
-		return "Conflito de horário. Escolha outro horário e tente novamente.";
-	}
-
-	if (status === 404) {
-		return "Recurso não encontrado para esta ação.";
-	}
-
-	if (status === 403) {
-		return "Você não tem permissão para realizar esta ação.";
-	}
-
-	if (status === 400) {
-		return "Dados inválidos. Revise os campos e tente novamente.";
-	}
-
-	return "Não foi possível concluir a ação. Tente novamente.";
-}
-
-function toFriendlyAppointmentStatus(status?: string): string {
-	if (status === "PENDING_CLIENT_CONFIRMATION") {
-		return "Aguardando confirmação do cliente";
-	}
-	if (status === "PENDING_PROFESSIONAL_CONFIRMATION") {
-		return "Aguardando confirmação do profissional";
-	}
-	if (status === "CONFIRMED") {
-		return "Confirmado";
-	}
-	if (status === "SCHEDULED") {
-		return "Agendado";
-	}
-	if (status === "CANCELLED") {
-		return "Cancelado";
-	}
-	if (status === "COMPLETED") {
-		return "Concluído";
-	}
-	if (status === "REJECTED") {
-		return "Rejeitado";
-	}
-	if (status === "NO_SHOW") {
-		return "Não compareceu";
-	}
-
-	return "Em processamento";
-}
-
 function toFriendlyPendingOwner(owner?: string | null): string {
 	if (owner === "CLIENT") {
 		return "cliente";
@@ -158,6 +101,8 @@ export function ProfessionalNewAppointmentPage() {
 
 	const [servicesLoading, setServicesLoading] = useState(false);
 	const [servicesError, setServicesError] = useState<string | null>(null);
+
+	const handleApiError = useApiError();
 	const [serviceOptions, setServiceOptions] = useState<
 		Array<{ service: Service; price: number }>
 	>([]);
@@ -217,22 +162,16 @@ export function ProfessionalNewAppointmentPage() {
 					})),
 				);
 			} catch (error) {
-				if ((error as AxiosError).response?.status === 401) {
-					navigate("/login", { replace: true });
-					return;
-				}
-				if ((error as AxiosError).response?.status === 403) {
-					navigate("/forbidden", { replace: true });
-					return;
-				}
-				setServicesError(toErrorMessage(error));
+				const result = handleApiError(error);
+				if (!result) return;
+				setServicesError(result.message);
 			} finally {
 				setServicesLoading(false);
 			}
 		};
 
 		void loadServices();
-	}, [companyId, professionalId, navigate]);
+	}, [companyId, professionalId, handleApiError]);
 
 	useEffect(() => {
 		const query = searchQuery.trim();
@@ -261,15 +200,9 @@ export function ProfessionalNewAppointmentPage() {
 					setSearchResults(users);
 					setSearchEmpty(users.length === 0);
 				} catch (error) {
-					if ((error as AxiosError).response?.status === 401) {
-						navigate("/login", { replace: true });
-						return;
-					}
-					if ((error as AxiosError).response?.status === 403) {
-						navigate("/forbidden", { replace: true });
-						return;
-					}
-					setSearchError(toErrorMessage(error));
+					const result = handleApiError(error);
+					if (!result) return;
+					setSearchError(result.message);
 					setSearchResults([]);
 				} finally {
 					setSearchLoading(false);
@@ -278,7 +211,7 @@ export function ProfessionalNewAppointmentPage() {
 		}, 400);
 
 		return () => clearTimeout(timeout);
-	}, [searchQuery, selectedClient, navigate]);
+	}, [searchQuery, selectedClient, handleApiError]);
 
 	useEffect(() => {
 		if (!selectedDate || !selectedServiceId || !professionalId) {
@@ -299,11 +232,9 @@ export function ProfessionalNewAppointmentPage() {
 				);
 				setSlots(availableSlots);
 			} catch (error) {
-				if ((error as AxiosError).response?.status === 401) {
-					navigate("/login", { replace: true });
-					return;
-				}
-				setSlotsError(toErrorMessage(error));
+				const result = handleApiError(error);
+				if (!result) return;
+				setSlotsError(result.message);
 				setSlots([]);
 			} finally {
 				setSlotsLoading(false);
@@ -311,7 +242,7 @@ export function ProfessionalNewAppointmentPage() {
 		};
 
 		void loadSlots();
-	}, [selectedDate, selectedServiceId, professionalId, navigate]);
+	}, [selectedDate, selectedServiceId, professionalId, handleApiError]);
 
 	const canGoStep2 = Boolean(selectedClient);
 	const canGoStep3 = Boolean(selectedServiceId);
@@ -384,15 +315,9 @@ export function ProfessionalNewAppointmentPage() {
 			resetQuickClient();
 			setStep(2);
 		} catch (error) {
-			if ((error as AxiosError).response?.status === 401) {
-				navigate("/login", { replace: true });
-				return;
-			}
-			if ((error as AxiosError).response?.status === 403) {
-				navigate("/forbidden", { replace: true });
-				return;
-			}
-			setCreateClientError(toErrorMessage(error));
+			const result = handleApiError(error);
+			if (!result) return;
+			setCreateClientError(result.message);
 		} finally {
 			setCreateClientLoading(false);
 		}
@@ -421,15 +346,9 @@ export function ProfessionalNewAppointmentPage() {
 			setCreatedAppointment(created);
 			setCreateStatus("success");
 		} catch (error) {
-			if ((error as AxiosError).response?.status === 401) {
-				navigate("/login", { replace: true });
-				return;
-			}
-			if ((error as AxiosError).response?.status === 403) {
-				navigate("/forbidden", { replace: true });
-				return;
-			}
-			if ((error as AxiosError).response?.status === 409) {
+			const result = handleApiError(error);
+			if (!result) return;
+			if (result.type === "conflict") {
 				setSlotsError("Horário já ocupado. Escolha outro horário.");
 				setSelectedSlot(null);
 				if (selectedDate && selectedServiceId) {
@@ -442,7 +361,7 @@ export function ProfessionalNewAppointmentPage() {
 				}
 			}
 			setCreateStatus("error");
-			setCreateError(toErrorMessage(error));
+			setCreateError(result.message);
 		}
 	};
 
@@ -793,7 +712,7 @@ export function ProfessionalNewAppointmentPage() {
 								</p>
 								<p className="mt-1 text-sm">
 									Status:{" "}
-									{toFriendlyAppointmentStatus(createdAppointment?.status)} •
+									{getAppointmentStatusLabelSafe(createdAppointment?.status)} •
 									pendente de{" "}
 									{toFriendlyPendingOwner(
 										createdAppointment?.pendingApprovalFrom,
