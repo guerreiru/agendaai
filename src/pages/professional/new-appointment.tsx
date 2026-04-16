@@ -26,7 +26,7 @@ type CreateStatus = "idle" | "loading" | "success" | "error";
 
 const quickCreateClientSchema = z.object({
   name: z.string().trim().min(1, "Nome é obrigatório"),
-  email: z.string().trim().email("Email inválido"),
+  email: z.email("Email inválido"),
   phone: z
     .string()
     .trim()
