@@ -1,8 +1,10 @@
-import { Clock3 } from "lucide-react";
-import { AppointmentStatusBadge } from "../../../components/ui/AppointmentStatusBadge";
+import { AppointmentRowFrame } from "../../../components/appointments/AppointmentRowFrame";
 import { Button } from "../../../components/ui/button";
 import type { Appointment } from "../../../types/booking";
-import { formatCurrency } from "../../../utils/currency";
+import {
+	canConfirmAppointment,
+	canRejectAppointment,
+} from "../../../utils/appointmentPermissions";
 import { durationMinutes } from "../../../utils/professionalAgenda";
 
 type AgendaRowProps = Appointment & {
@@ -24,73 +26,35 @@ export function AgendaRow({
 	...appointment
 }: AgendaRowProps) {
 	const minutes = durationMinutes(appointment.startTime, appointment.endTime);
-	const canConfirm =
-		appointment.status === "PENDING_PROFESSIONAL_CONFIRMATION" &&
-		appointment.pendingApprovalFrom === "PROFESSIONAL";
+	const canConfirm = canConfirmAppointment("PROFESSIONAL", appointment);
+	const canReject = canRejectAppointment("PROFESSIONAL", appointment);
+	const canConfirmReject = canConfirm || canReject;
 	const canComplete = appointment.status === "CONFIRMED";
 
 	return (
-		<div className="grid gap-4 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm md:grid-cols-[120px_1.4fr_1.4fr_auto_1fr] md:items-center">
-			<div>
-				<div className="flex items-center gap-2 text-slate-800">
-					<Clock3 className="size-4 text-orange-500" />
-					<p className="text-2xl font-bold leading-none">
-						{appointment.startTime}
-					</p>
-				</div>
-				<p className="mt-1 text-xs text-slate-500">{minutes} min</p>
-			</div>
-
-			<div>
-				<p className="text-[11px] uppercase tracking-wide text-slate-400">
-					Cliente
-				</p>
-				<p className="text-sm font-semibold text-slate-800">
-					{appointment.client?.name ?? "Cliente"}
-				</p>
-				<p className="text-xs text-slate-500">
-					{appointment.client?.email ?? ""}
-				</p>
-			</div>
-
-			<div>
-				<p className="text-[11px] uppercase tracking-wide text-slate-400">
-					Serviço
-				</p>
-				<p className="text-sm font-semibold text-slate-800">{serviceName}</p>
-				<p className="text-xs text-slate-500">
-					com {appointment.professional?.name ?? "Profissional"}
-				</p>
-			</div>
-
-			<div>
-				<p className="text-[11px] uppercase tracking-wide text-slate-400">
-					Valor
-				</p>
-				<p className="text-xl font-bold text-orange-600">
-					{formatCurrency(appointment.price)}
-				</p>
-			</div>
-
-			<div className="relative flex items-center gap-2 md:flex-col md:items-end">
-				<AppointmentStatusBadge status={appointment.status} />
-				{canConfirm ? (
+		<AppointmentRowFrame
+			actions={
+				canConfirmReject ? (
 					<div className="flex items-center gap-2 md:flex-col md:items-end">
-						<Button
-							disabled={isMutating}
-							onClick={() => void onConfirm()}
-							type="button"
-						>
-							Confirmar
-						</Button>
-						<Button
-							variant="destructive"
-							disabled={isMutating}
-							onClick={() => void onReject()}
-							type="button"
-						>
-							Rejeitar
-						</Button>
+						{canConfirm && (
+							<Button
+								disabled={isMutating}
+								onClick={() => void onConfirm()}
+								type="button"
+							>
+								Confirmar
+							</Button>
+						)}
+						{canReject && (
+							<Button
+								variant="destructive"
+								disabled={isMutating}
+								onClick={() => void onReject()}
+								type="button"
+							>
+								Rejeitar
+							</Button>
+						)}
 					</div>
 				) : canComplete ? (
 					<div className="flex items-center gap-2 md:flex-col md:items-end">
@@ -111,8 +75,36 @@ export function AgendaRow({
 							Não compareceu
 						</Button>
 					</div>
-				) : null}
-			</div>
-		</div>
+				) : null
+			}
+			durationMinutes={minutes}
+			middleLeft={
+				<div>
+					<p className="text-[11px] uppercase tracking-wide text-slate-400">
+						Cliente
+					</p>
+					<p className="text-sm font-semibold text-slate-800">
+						{appointment.client?.name ?? "Cliente"}
+					</p>
+					<p className="text-xs text-slate-500">
+						{appointment.client?.email ?? ""}
+					</p>
+				</div>
+			}
+			middleRight={
+				<div>
+					<p className="text-[11px] uppercase tracking-wide text-slate-400">
+						Serviço
+					</p>
+					<p className="text-sm font-semibold text-slate-800">{serviceName}</p>
+					<p className="text-xs text-slate-500">
+						com {appointment.professional?.name ?? "Profissional"}
+					</p>
+				</div>
+			}
+			price={appointment.price}
+			startTime={appointment.startTime}
+			status={appointment.status}
+		/>
 	);
 }

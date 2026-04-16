@@ -11,6 +11,10 @@ import {
 import { listCompanyServices } from "../services/api/services";
 import type { Appointment } from "../types/booking";
 import type { ProfessionalDashboardResponse } from "../types/dashboard";
+import {
+	canConfirmAppointment,
+	canRejectAppointment,
+} from "../utils/appointmentPermissions";
 import { logError } from "../utils/logger";
 import { appointmentStart } from "../utils/professionalAgenda";
 import { useApiError } from "./useApiError";
@@ -221,7 +225,10 @@ export function useProfessionalDashboard() {
 		setIsDashboardNotFound(false);
 	}, [dashboardQueryError, handleApiError, showToast]);
 
-	const appointments = appointmentsData?.appointments ?? [];
+	const appointments = useMemo(
+		() => appointmentsData?.appointments ?? [],
+		[appointmentsData],
+	);
 	const serviceNameById = appointmentsData?.serviceNameById ?? {};
 
 	const loadDashboardMetrics = useCallback(async () => {
@@ -294,11 +301,19 @@ export function useProfessionalDashboard() {
 
 	const confirmAppointmentById = useCallback(
 		async (appointmentId: string) => {
+			const appointment = appointments.find(
+				(item) => item.id === appointmentId,
+			);
+			if (!appointment || !canConfirmAppointment(user?.role, appointment)) {
+				showToast("Você não tem permissão para confirmar este agendamento.");
+				return;
+			}
+
 			await handleCriticalAction(appointmentId, async () => {
 				await confirmAppointment(appointmentId);
 			});
 		},
-		[handleCriticalAction],
+		[appointments, handleCriticalAction, showToast, user?.role],
 	);
 
 	const completeAppointmentById = useCallback(
@@ -321,11 +336,19 @@ export function useProfessionalDashboard() {
 
 	const rejectAppointmentById = useCallback(
 		async (appointmentId: string) => {
+			const appointment = appointments.find(
+				(item) => item.id === appointmentId,
+			);
+			if (!appointment || !canRejectAppointment(user?.role, appointment)) {
+				showToast("Você não tem permissão para rejeitar este agendamento.");
+				return;
+			}
+
 			await handleCriticalAction(appointmentId, async () => {
 				await rejectAppointment(appointmentId);
 			});
 		},
-		[handleCriticalAction],
+		[appointments, handleCriticalAction, showToast, user?.role],
 	);
 
 	const clearFilters = useCallback(() => {
