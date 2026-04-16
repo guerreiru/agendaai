@@ -18,7 +18,10 @@ export function useApiError() {
 	const handleApiError = useCallback(
 		(error: unknown): ApiErrorAction | null => {
 			const apiError = toApiError(error);
-			const classified = classifyApiError(apiError.statusCode, apiError.message);
+			const classified = classifyApiError(
+				apiError.statusCode,
+				apiError.message,
+			);
 
 			if (classified.type === "unauthenticated") {
 				navigate("/login", { replace: true });

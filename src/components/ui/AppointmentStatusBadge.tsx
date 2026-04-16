@@ -1,28 +1,28 @@
 import type { AppointmentStatus } from "../../types/booking";
 import {
-  getAppointmentStatusBadgeClass,
-  getAppointmentStatusLabelSafe,
+	getAppointmentStatusBadgeClass,
+	getAppointmentStatusLabelSafe,
 } from "../../utils/appointmentStatus";
 
 type AppointmentStatusBadgeProps = {
-  status: AppointmentStatus | string | null | undefined;
-  className?: string;
+	status: AppointmentStatus | string | null | undefined;
+	className?: string;
 };
 
 export function AppointmentStatusBadge({
-  status,
-  className = "",
+	status,
+	className = "",
 }: AppointmentStatusBadgeProps) {
-  const badgeClass = getAppointmentStatusBadgeClass(
-    status as AppointmentStatus,
-  );
-  const label = getAppointmentStatusLabelSafe(status);
+	const badgeClass = getAppointmentStatusBadgeClass(
+		status as AppointmentStatus,
+	);
+	const label = getAppointmentStatusLabelSafe(status);
 
-  return (
-    <div
-      className={`flex items-center justify-center px-2.5 py-1 rounded-full ${badgeClass} ${className} w-fit`}
-    >
-      {label}
-    </div>
-  );
+	return (
+		<div
+			className={`flex items-center justify-center px-2.5 py-1 rounded-full ${badgeClass} ${className} w-fit text-xs`}
+		>
+			{label}
+		</div>
+	);
 }
