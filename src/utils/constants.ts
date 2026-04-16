@@ -3,17 +3,17 @@ import type { AppointmentStatus } from "../types/booking";
 import { APPOINTMENT_STATUS_META } from "./appointmentStatus";
 
 export const COMMON_TIMEZONES = [
-	{ label: "America/Sao_Paulo", value: "São Paulo" },
-	{ label: "America/Manaus", value: "Manaus" },
-	{ label: "America/Recife", value: "Recife" },
-	{ label: "America/Fortaleza", value: "Fortaleza" },
-	{ label: "America/Cuiaba", value: "Cuiaba" },
-	{ label: "America/Araguaina", value: "Araguaina" },
-	{ label: "America/Buenos_Aires", value: "Buenos Aires" },
-	{ label: "America/Bogota", value: "Bogota" },
-	{ label: "America/Caracas", value: "Caracas" },
-	{ label: "America/Guayaquil", value: "Guayaquil" },
-	{ label: "America/Lima", value: "Lima" },
+	{ label: "São Paulo", value: "America/Sao_Paulo" },
+	{ label: "Manaus", value: "America/Manaus" },
+	{ label: "Recife", value: "America/Recife" },
+	{ label: "Fortaleza", value: "America/Fortaleza" },
+	{ label: "Cuiaba", value: "America/Cuiaba" },
+	{ label: "Araguaina", value: "America/Araguaina" },
+	{ label: "Buenos Aires", value: "America/Buenos_Aires" },
+	{ label: "Bogota", value: "America/Bogota" },
+	{ label: "Caracas", value: "America/Caracas" },
+	{ label: "Guayaquil", value: "America/Guayaquil" },
+	{ label: "Lima", value: "America/Lima" },
 ];
 
 export const STATUS_LABEL: Record<AppointmentStatus, string> =
@@ -61,4 +61,4 @@ export const weekdays = [
 	{ value: 5, label: "Sexta" },
 	{ value: 6, label: "Sábado" },
 	{ value: 0, label: "Domingo" },
-]
+];
