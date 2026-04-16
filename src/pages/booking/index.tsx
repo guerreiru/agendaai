@@ -300,7 +300,6 @@ export function BookingPage() {
 			<div className="max-w-2xl mx-auto">
 				<BookingWizardHeader currentStep={currentStep} />
 
-				{/* Content */}
 				<div className="bg-white rounded-lg shadow-lg p-8">
 					{currentStep === 1 && (
 						<Step1SelectService

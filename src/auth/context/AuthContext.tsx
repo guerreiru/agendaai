@@ -122,8 +122,8 @@ export function AuthProvider({ children }: PropsWithChildren) {
 
 		try {
 			await logoutRequest();
-		} catch {
-			// Local cleanup still happens even if backend already invalidated session.
+		} catch (err) {
+			setError(toApiError(err));
 		} finally {
 			clearSessionLocal();
 			setError(null);
