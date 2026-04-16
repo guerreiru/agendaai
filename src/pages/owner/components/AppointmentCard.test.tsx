@@ -68,17 +68,14 @@ describe("AppointmentCard owner actions", () => {
 		render(
 			<AppointmentCard
 				appointment={makeAppointment({ status: "PENDING_CLIENT_CONFIRMATION" })}
+				currentUserRole="COMPANY_OWNER"
 				serviceName="Consulta"
 				onRefresh={vi.fn()}
 			/>,
 		);
 
-		expect(
-			screen.getByRole("button", { name: "Confirmar" }),
-		).toBeInTheDocument();
-		expect(
-			screen.getByRole("button", { name: "Rejeitar" }),
-		).toBeInTheDocument();
+		expect(screen.queryByRole("button", { name: "Confirmar" })).toBeNull();
+		expect(screen.queryByRole("button", { name: "Rejeitar" })).toBeNull();
 		expect(
 			screen.getByRole("button", { name: "Cancelar agendamento" }),
 		).toBeInTheDocument();
@@ -92,7 +89,9 @@ describe("AppointmentCard owner actions", () => {
 			<AppointmentCard
 				appointment={makeAppointment({
 					status: "PENDING_PROFESSIONAL_CONFIRMATION",
+					pendingApprovalFrom: "PROFESSIONAL",
 				})}
+				currentUserRole="PROFESSIONAL"
 				serviceName="Consulta"
 				onRefresh={onRefresh}
 			/>,
@@ -115,6 +114,7 @@ describe("AppointmentCard owner actions", () => {
 		render(
 			<AppointmentCard
 				appointment={makeAppointment({ status: "PENDING_CLIENT_CONFIRMATION" })}
+				currentUserRole="CLIENT"
 				serviceName="Consulta"
 				onRefresh={onRefresh}
 			/>,
@@ -139,6 +139,7 @@ describe("AppointmentCard owner actions", () => {
 					status: "CONFIRMED",
 					pendingApprovalFrom: null,
 				})}
+				currentUserRole="COMPANY_OWNER"
 				serviceName="Consulta"
 				onRefresh={onRefresh}
 			/>,
@@ -160,6 +161,7 @@ describe("AppointmentCard owner actions", () => {
 					status: "COMPLETED",
 					pendingApprovalFrom: null,
 				})}
+				currentUserRole="COMPANY_OWNER"
 				serviceName="Consulta"
 				onRefresh={vi.fn()}
 			/>,
@@ -183,6 +185,7 @@ describe("AppointmentCard owner actions", () => {
 		render(
 			<AppointmentCard
 				appointment={makeAppointment({ status: "PENDING_CLIENT_CONFIRMATION" })}
+				currentUserRole="CLIENT"
 				serviceName="Consulta"
 				onRefresh={vi.fn()}
 			/>,
@@ -206,6 +209,7 @@ describe("AppointmentCard owner actions", () => {
 		render(
 			<AppointmentCard
 				appointment={makeAppointment({ status: "PENDING_CLIENT_CONFIRMATION" })}
+				currentUserRole="CLIENT"
 				serviceName="Consulta"
 				onRefresh={vi.fn()}
 			/>,
@@ -234,6 +238,7 @@ describe("AppointmentCard owner actions", () => {
 		render(
 			<AppointmentCard
 				appointment={makeAppointment({ status: "PENDING_CLIENT_CONFIRMATION" })}
+				currentUserRole="CLIENT"
 				serviceName="Consulta"
 				onRefresh={onRefresh}
 			/>,
