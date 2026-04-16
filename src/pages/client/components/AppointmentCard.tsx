@@ -1,6 +1,5 @@
-import { Clock3 } from "lucide-react";
 import { useState } from "react";
-import { AppointmentStatusBadge } from "../../../components/ui/AppointmentStatusBadge";
+import { AppointmentRowFrame } from "../../../components/appointments/AppointmentRowFrame";
 import { Button } from "../../../components/ui/button";
 import {
 	cancelAppointment,
@@ -8,8 +7,11 @@ import {
 	rejectAppointment,
 } from "../../../services/api/appointments";
 import type { Appointment } from "../../../types/booking";
+import {
+	canConfirmAppointment,
+	canRejectAppointment,
+} from "../../../utils/appointmentPermissions";
 import { HISTORY_STATUSES } from "../../../utils/constants";
-import { formatCurrency } from "../../../utils/currency";
 import { formatDate } from "../../../utils/formatDate";
 import { durationMinutes } from "../../../utils/professionalAgenda";
 import { sanitizeUserInput } from "../../../utils/sanitize";
@@ -31,9 +33,9 @@ export function AppointmentCard({
 	const [isActing, setIsActing] = useState(false);
 	const [actionError, setActionError] = useState<string | null>(null);
 
-	const canConfirmReject =
-		appointment.status === "PENDING_CLIENT_CONFIRMATION" &&
-		appointment.pendingApprovalFrom === "CLIENT";
+	const canConfirm = canConfirmAppointment("CLIENT", appointment);
+	const canReject = canRejectAppointment("CLIENT", appointment);
+	const canConfirmReject = canConfirm || canReject;
 
 	const canCancel =
 		appointment.status !== "COMPLETED" && appointment.status !== "NO_SHOW";
@@ -41,6 +43,11 @@ export function AppointmentCard({
 	const isHistory = HISTORY_STATUSES.includes(appointment.status);
 
 	async function handleConfirm() {
+		if (!canConfirm) {
+			setActionError("Você não tem permissão para confirmar este agendamento.");
+			return;
+		}
+
 		setIsActing(true);
 		setActionError(null);
 		try {
@@ -54,6 +61,11 @@ export function AppointmentCard({
 	}
 
 	async function handleReject() {
+		if (!canReject) {
+			setActionError("Você não tem permissão para rejeitar este agendamento.");
+			return;
+		}
+
 		if (!showRejectInput) {
 			setShowRejectInput(true);
 			return;
@@ -89,108 +101,96 @@ export function AppointmentCard({
 
 	return (
 		<div className="space-y-3 rounded-2xl border border-slate-200 bg-white px-4 py-4 shadow-sm">
-			<div className="grid gap-4 md:grid-cols-2 lg:grid-cols-[120px_1.4fr_1.4fr_auto_1fr] lg:items-center">
-				<div>
-					<div className="flex items-center gap-2 text-slate-800">
-						<Clock3 className="size-4 text-orange-500" />
-						<p className="text-2xl font-bold leading-none">
-							{appointment.startTime}
-						</p>
-					</div>
-					<p className="mt-1 text-xs text-slate-500">{minutes} min</p>
-				</div>
-
-				<div>
-					<p className="text-[11px] uppercase tracking-wide text-slate-400">
-						Profissional
-					</p>
-					<p className="text-sm font-semibold text-slate-800">
-						{sanitizeUserInput(appointment.professional.name)}
-					</p>
-					<p className="text-xs text-slate-500">
-						{appointment.professional.email}
-					</p>
-				</div>
-
-				<div>
-					<p className="text-[11px] uppercase tracking-wide text-slate-400">
-						Agendamento
-					</p>
-					<p className="text-sm font-semibold text-slate-800">
-						{formatDate(appointment.date)}
-					</p>
-					<p className="text-xs text-slate-500">
-						{appointment.startTime} - {appointment.endTime}
-					</p>
-				</div>
-
-				<div>
-					<p className="text-[11px] uppercase tracking-wide text-slate-400">
-						Valor
-					</p>
-					<p className="text-xl font-bold text-orange-600">
-						{formatCurrency(appointment.price)}
-					</p>
-				</div>
-
-				<div className="relative flex gap-2 flex-col md:flex-row lg:flex-col items-start md:items-center lg:items-end">
-					<AppointmentStatusBadge status={appointment.status} />
-
-					{canConfirmReject && (
-						<div className="flex items-center gap-2 md:flex-col md:items-end">
-							<Button
-								disabled={isActing}
-								onClick={() => void handleConfirm()}
-								type="button"
-							>
-								{isActing ? "..." : "Confirmar"}
-							</Button>
-							<Button
-								variant="destructive"
-								disabled={isActing}
-								onClick={() => void handleReject()}
-								type="button"
-							>
-								{isActing
-									? "..."
-									: showRejectInput
-										? "Confirmar rejeição"
-										: "Rejeitar"}
-							</Button>
-						</div>
-					)}
-
-					{!isHistory && !canConfirmReject && canCancel && (
-						<div className="flex items-center gap-2 md:flex-col md:items-end">
-							<Button
-								variant="outline"
-								disabled={isActing}
-								onClick={() => void handleCancel()}
-								type="button"
-							>
-								{isActing
-									? "Cancelando..."
-									: showCancelInput
-										? "Confirmar cancelamento"
-										: "Cancelar"}
-							</Button>
-							{showCancelInput && (
+			<AppointmentRowFrame
+				actions={
+					<>
+						{canConfirmReject && (
+							<div className="flex items-center gap-2 md:flex-col md:items-end">
 								<Button
-									variant="ghost"
 									disabled={isActing}
-									onClick={() => {
-										setShowCancelInput(false);
-										setCancelReason("");
-									}}
+									onClick={() => void handleConfirm()}
 									type="button"
 								>
-									Fechar
+									{isActing ? "..." : "Confirmar"}
 								</Button>
-							)}
-						</div>
-					)}
-				</div>
-			</div>
+								<Button
+									variant="destructive"
+									disabled={isActing}
+									onClick={() => void handleReject()}
+									type="button"
+								>
+									{isActing
+										? "..."
+										: showRejectInput
+											? "Confirmar rejeição"
+											: "Rejeitar"}
+								</Button>
+							</div>
+						)}
+
+						{!isHistory && !canConfirmReject && canCancel && (
+							<div className="flex items-center gap-2 md:flex-col md:items-end">
+								<Button
+									variant="outline"
+									disabled={isActing}
+									onClick={() => void handleCancel()}
+									type="button"
+								>
+									{isActing
+										? "Cancelando..."
+										: showCancelInput
+											? "Confirmar cancelamento"
+											: "Cancelar"}
+								</Button>
+								{showCancelInput && (
+									<Button
+										variant="ghost"
+										disabled={isActing}
+										onClick={() => {
+											setShowCancelInput(false);
+											setCancelReason("");
+										}}
+										type="button"
+									>
+										Fechar
+									</Button>
+								)}
+							</div>
+						)}
+					</>
+				}
+				durationMinutes={minutes}
+				middleLeft={
+					<div>
+						<p className="text-[11px] uppercase tracking-wide text-slate-400">
+							Profissional
+						</p>
+						<p className="text-sm font-semibold text-slate-800">
+							{sanitizeUserInput(appointment.professional.name)}
+						</p>
+						<p className="text-xs text-slate-500">
+							{appointment.professional.email}
+						</p>
+					</div>
+				}
+				middleRight={
+					<div>
+						<p className="text-[11px] uppercase tracking-wide text-slate-400">
+							Agendamento
+						</p>
+						<p className="text-sm font-semibold text-slate-800">
+							{formatDate(appointment.date)}
+						</p>
+						<p className="text-xs text-slate-500">
+							{appointment.startTime} - {appointment.endTime}
+						</p>
+					</div>
+				}
+				price={appointment.price}
+				startTime={appointment.startTime}
+				status={appointment.status}
+				statusContainerClassName="relative flex gap-2 flex-col md:flex-row lg:flex-col items-start md:items-center lg:items-end"
+			/>
 
 			{appointment.status === "REJECTED" && appointment.rejectionReason && (
 				<div className="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
