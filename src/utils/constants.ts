@@ -1,5 +1,6 @@
 import type { BadgeVariant } from "../types/badgeVariant";
 import type { AppointmentStatus } from "../types/booking";
+import { APPOINTMENT_STATUS_META } from "./appointmentStatus";
 
 export const COMMON_TIMEZONES = [
 	{ label: "America/Sao_Paulo", value: "São Paulo" },
@@ -15,27 +16,21 @@ export const COMMON_TIMEZONES = [
 	{ label: "America/Lima", value: "Lima" },
 ];
 
-export const STATUS_LABEL: Record<AppointmentStatus, string> = {
-	PENDING_CLIENT_CONFIRMATION: "Aguardando sua confirmação",
-	PENDING_PROFESSIONAL_CONFIRMATION: "Aguardando confirmação do profissional",
-	CONFIRMED: "Confirmado",
-	SCHEDULED: "Agendado",
-	CANCELLED: "Cancelado",
-	COMPLETED: "Concluído",
-	REJECTED: "Rejeitado",
-	NO_SHOW: "Não compareceu",
-};
+export const STATUS_LABEL: Record<AppointmentStatus, string> =
+	Object.fromEntries(
+		Object.entries(APPOINTMENT_STATUS_META).map(([status, meta]) => [
+			status,
+			meta.label,
+		]),
+	) as Record<AppointmentStatus, string>;
 
-export const STATUS_VARIANT: Record<AppointmentStatus, BadgeVariant> = {
-	PENDING_CLIENT_CONFIRMATION: "yellow",
-	PENDING_PROFESSIONAL_CONFIRMATION: "yellow",
-	CONFIRMED: "green",
-	SCHEDULED: "green",
-	CANCELLED: "gray",
-	COMPLETED: "gray",
-	REJECTED: "red",
-	NO_SHOW: "gray",
-};
+export const STATUS_VARIANT: Record<AppointmentStatus, BadgeVariant> =
+	Object.fromEntries(
+		Object.entries(APPOINTMENT_STATUS_META).map(([status, meta]) => [
+			status,
+			meta.color,
+		]),
+	) as Record<AppointmentStatus, BadgeVariant>;
 
 export const VARIANT_CLASS: Record<BadgeVariant, string> = {
 	yellow: "bg-yellow-100 text-yellow-800 border-yellow-300",
@@ -57,3 +52,13 @@ export const HISTORY_STATUSES: AppointmentStatus[] = [
 	"REJECTED",
 	"NO_SHOW",
 ];
+
+export const weekdays = [
+	{ value: 1, label: "Segunda" },
+	{ value: 2, label: "Terça" },
+	{ value: 3, label: "Quarta" },
+	{ value: 4, label: "Quinta" },
+	{ value: 5, label: "Sexta" },
+	{ value: 6, label: "Sábado" },
+	{ value: 0, label: "Domingo" },
+]
