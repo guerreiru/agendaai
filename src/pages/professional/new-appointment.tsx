@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import { FormField } from "../../components/ui/formField";
-import { useAuth } from "../../hooks/useAuth";
 import { useApiError } from "../../hooks/useApiError";
+import { useAuth } from "../../hooks/useAuth";
 import {
 	type ClientSearchResult,
 	createAppointmentByProfessional,
@@ -16,8 +16,8 @@ import {
 } from "../../services/api/professional-booking";
 import type { Appointment, TimeSlot } from "../../types/booking";
 import type { Service } from "../../types/service";
-import { formatCurrency } from "../../utils/currency";
 import { getAppointmentStatusLabelSafe } from "../../utils/appointmentStatus";
+import { formatCurrency } from "../../utils/currency";
 import { sanitizeUserInput } from "../../utils/sanitize";
 
 type Step = 1 | 2 | 3 | 4;
@@ -384,7 +384,7 @@ export function ProfessionalNewAppointmentPage() {
 	return (
 		<section className="space-y-5">
 			<div className="flex items-center justify-between">
-				<h1 className="text-2xl font-bold text-slate-900">
+				<h1 className="text-2xl font-bold text-slate-950">
 					Novo agendamento para cliente
 				</h1>
 				<Link
@@ -415,13 +415,13 @@ export function ProfessionalNewAppointmentPage() {
 
 				{step === 1 && (
 					<div className="space-y-4">
-						<h2 className="text-lg font-semibold text-slate-900">
+						<h2 className="text-lg font-semibold text-slate-950">
 							Etapa 1: Cliente
 						</h2>
 
 						{selectedClient ? (
 							<div className="rounded-lg border border-sky-200 bg-sky-50 p-4">
-								<p className="font-semibold text-slate-900">
+								<p className="font-semibold text-slate-950">
 									{sanitizeUserInput(selectedClient.name)}
 								</p>
 								<p className="text-sm text-slate-700">{selectedClient.email}</p>
@@ -464,7 +464,7 @@ export function ProfessionalNewAppointmentPage() {
 													onClick={() => handleSelectClient(client)}
 													type="button"
 												>
-													<p className="font-semibold text-slate-900">
+													<p className="font-semibold text-slate-950">
 														{sanitizeUserInput(client.name)}
 													</p>
 													<p className="text-sm text-slate-700">
@@ -517,7 +517,7 @@ export function ProfessionalNewAppointmentPage() {
 
 				{step === 2 && (
 					<div className="space-y-4">
-						<h2 className="text-lg font-semibold text-slate-900">
+						<h2 className="text-lg font-semibold text-slate-950">
 							Etapa 2: Serviço
 						</h2>
 
@@ -549,7 +549,7 @@ export function ProfessionalNewAppointmentPage() {
 									onClick={() => handleServiceChange(item.service.id)}
 									type="button"
 								>
-									<p className="font-semibold text-slate-900">
+									<p className="font-semibold text-slate-950">
 										{sanitizeUserInput(item.service.name)}
 									</p>
 									<p className="text-sm text-slate-700">
@@ -586,7 +586,7 @@ export function ProfessionalNewAppointmentPage() {
 
 				{step === 3 && (
 					<div className="space-y-4">
-						<h2 className="text-lg font-semibold text-slate-900">
+						<h2 className="text-lg font-semibold text-slate-950">
 							Etapa 3: Data e horário
 						</h2>
 
@@ -670,7 +670,7 @@ export function ProfessionalNewAppointmentPage() {
 
 				{step === 4 && (
 					<div className="space-y-4">
-						<h2 className="text-lg font-semibold text-slate-900">
+						<h2 className="text-lg font-semibold text-slate-950">
 							Etapa 4: Revisão e confirmação
 						</h2>
 
@@ -765,9 +765,9 @@ export function ProfessionalNewAppointmentPage() {
 			</div>
 
 			{isCreateClientOpen && (
-				<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 p-4">
+				<div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/40 p-4">
 					<div className="w-full max-w-md rounded-xl bg-white p-5 shadow-xl">
-						<h3 className="text-lg font-bold text-slate-900">
+						<h3 className="text-lg font-bold text-slate-950">
 							Cadastro rápido de cliente
 						</h3>
 
