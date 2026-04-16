@@ -9,6 +9,10 @@ import {
 	updateAppointmentStatus,
 } from "../../../services/api/appointments";
 import type { AppointmentStatus } from "../../../types/booking";
+import {
+	canConfirmAppointment,
+	canRejectAppointment,
+} from "../../../utils/appointmentPermissions";
 import { formatCurrency } from "../../../utils/currency";
 import { sanitizeUserInput } from "../../../utils/sanitize";
 import {
@@ -21,6 +25,7 @@ import type { AppointmentCardProps } from "../appointments/types";
 
 export function AppointmentCard({
 	appointment,
+	currentUserRole,
 	serviceName,
 	onRefresh,
 }: AppointmentCardProps) {
@@ -31,7 +36,21 @@ export function AppointmentCard({
 
 	const isTerminal = TERMINAL_STATUSES.includes(appointment.status);
 	const canCancel = !isTerminal;
-	const transitions = getSafeTransitions(appointment.status);
+	const canConfirm = canConfirmAppointment(currentUserRole, appointment);
+	const canReject = canRejectAppointment(currentUserRole, appointment);
+	const transitions = getSafeTransitions(appointment.status).filter(
+		(status) => {
+			if (status === "CONFIRMED") {
+				return canConfirm;
+			}
+
+			if (status === "REJECTED") {
+				return canReject;
+			}
+
+			return true;
+		},
+	);
 
 	const durationInMinutes = useMemo(() => {
 		const [startHour, startMinute] = appointment.startTime
@@ -46,6 +65,16 @@ export function AppointmentCard({
 	}, [appointment.endTime, appointment.startTime]);
 
 	async function handleTransition(status: AppointmentStatus) {
+		if (status === "CONFIRMED" && !canConfirm) {
+			setActionError("Você não tem permissão para confirmar este agendamento.");
+			return;
+		}
+
+		if (status === "REJECTED" && !canReject) {
+			setActionError("Você não tem permissão para rejeitar este agendamento.");
+			return;
+		}
+
 		setIsActing(true);
 		setActionError(null);
 		try {

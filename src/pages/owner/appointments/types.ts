@@ -1,10 +1,12 @@
 import type { Appointment, AppointmentStatus } from "../../../types/booking";
+import type { UserRole } from "../../../types/user";
 
 export type PeriodFilter = "ALL" | "TODAY" | "NEXT_7_DAYS" | "THIS_MONTH";
 export type StatusFilter = "ALL" | AppointmentStatus;
 
 export type AppointmentCardProps = {
 	appointment: Appointment;
+	currentUserRole?: UserRole | null;
 	serviceName: string;
 	onRefresh: () => void;
 };
