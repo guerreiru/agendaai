@@ -24,29 +24,32 @@ export const APPOINTMENT_STATUS_META: Record<
 	PENDING_CLIENT_CONFIRMATION: {
 		label: "Aguardando confirmação do cliente",
 		color: "yellow",
-		badgeClass: "font-medium bg-yellow-100 text-amber-800 border border-yellow-300",
+		badgeClass:
+			"font-medium bg-yellow-100 text-amber-800 border border-yellow-300",
 		panelClass: "bg-yellow-50 border-yellow-200 text-yellow-700",
 		message: "Agendamento criado. Você receberá uma confirmação em breve.",
 	},
 	PENDING_PROFESSIONAL_CONFIRMATION: {
-		label: "Aguardando confirmação do profissional",
+		label: "Aguardando profissional",
 		color: "yellow",
-		badgeClass: "font-medium bg-yellow-100 text-amber-800 border border-yellow-300",
+		badgeClass:
+			"font-medium bg-yellow-100 text-amber-800 border border-yellow-300",
 		panelClass: "bg-yellow-50 border-yellow-200 text-yellow-700",
-		message:
-			"Agendamento criado com sucesso. Aguardando confirmação do profissional.",
+		message: "Agendamento criado com sucesso. Aguardando profissional.",
 	},
 	CONFIRMED: {
 		label: "Confirmado",
 		color: "green",
-		badgeClass: "font-medium bg-emerald-100 text-emerald-800 border border-emerald-300",
+		badgeClass:
+			"font-medium bg-emerald-100 text-emerald-800 border border-emerald-300",
 		panelClass: "bg-emerald-50 border-emerald-200 text-emerald-700",
 		message: "Seu agendamento foi confirmado automaticamente!",
 	},
 	SCHEDULED: {
 		label: "Agendado",
 		color: "green",
-		badgeClass: "font-medium bg-emerald-100 text-emerald-800 border border-emerald-300",
+		badgeClass:
+			"font-medium bg-emerald-100 text-emerald-800 border border-emerald-300",
 		panelClass: "bg-emerald-50 border-emerald-200 text-emerald-700",
 		message: "Agendamento agendado com sucesso!",
 	},
@@ -124,7 +127,9 @@ export function getAppointmentStatusBadgeClass(
 	return APPOINTMENT_STATUS_META[status].badgeClass;
 }
 
-export function getAppointmentStatusPanelClass(status: AppointmentStatus): string {
+export function getAppointmentStatusPanelClass(
+	status: AppointmentStatus,
+): string {
 	return APPOINTMENT_STATUS_META[status].panelClass;
 }
 

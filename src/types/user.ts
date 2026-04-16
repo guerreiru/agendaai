@@ -17,8 +17,8 @@ export type OwnedCompany = {
 	autoConfirm: boolean;
 	createdAt: string;
 	updatedAt: string;
-	professionals?: User[]
-	services?: Service[]
+	professionals?: User[];
+	services?: Service[];
 };
 
 export type User = {

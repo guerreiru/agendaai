@@ -3,7 +3,11 @@ export type DashboardAppointment = {
 	date: string;
 	startTime: string;
 	endTime: string;
-	status: "SCHEDULED" | "PENDING_CLIENT_CONFIRMATION" | "PENDING_PROFESSIONAL_CONFIRMATION" | "CONFIRMED";
+	status:
+		| "SCHEDULED"
+		| "PENDING_CLIENT_CONFIRMATION"
+		| "PENDING_PROFESSIONAL_CONFIRMATION"
+		| "CONFIRMED";
 	service: {
 		id: string;
 		name: string;
@@ -17,8 +21,8 @@ export type DashboardAppointment = {
 		id: string;
 		name: string;
 	};
-  price: number;
-}
+	price: number;
+};
 
 export type CompanyDashboardResponse = {
 	companyId: string;
@@ -27,11 +31,11 @@ export type CompanyDashboardResponse = {
 	todayAppointmentsCount: number;
 	monthRevenue: number;
 	nextAppointments: DashboardAppointment[];
-}
+};
 
 export type ProfessionalDashboardResponse = {
 	professionalId: string;
 	activeServiceCount: number;
 	todayAppointmentsCount: number;
 	monthRevenue: number;
-}
+};
