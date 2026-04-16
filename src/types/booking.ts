@@ -35,15 +35,15 @@ export type TimeSlot = {
 	endTime: string; // HH:mm
 };
 
-export type AppointmentStatus =
-	| "CONFIRMED"
-	| "PENDING_PROFESSIONAL_CONFIRMATION"
-	| "PENDING_CLIENT_CONFIRMATION"
-	| "SCHEDULED"
-	| "CANCELLED"
-	| "COMPLETED"
-	| "REJECTED"
-	| "NO_SHOW";
+export type AppointmentStatus = 
+"SCHEDULED" |
+"PENDING_CLIENT_CONFIRMATION" |
+"PENDING_PROFESSIONAL_CONFIRMATION" |
+"CONFIRMED" |
+"CANCELLED" |
+"COMPLETED" |
+"NO_SHOW" |
+"REJECTED"
 
 export type Appointment = {
 	id: string;

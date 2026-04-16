@@ -1,3 +1,5 @@
+import type { Service } from "./service";
+
 export type UserRole =
 	| "CLIENT"
 	| "PROFESSIONAL"
@@ -15,6 +17,8 @@ export type OwnedCompany = {
 	autoConfirm: boolean;
 	createdAt: string;
 	updatedAt: string;
+	professionals?: User[]
+	services?: Service[]
 };
 
 export type User = {
@@ -26,7 +30,7 @@ export type User = {
 	companyId?: string | null;
 	displayName?: string | null;
 	ownedCompany?: OwnedCompany[];
-	professionalServices?: unknown[];
+	professionalServices?: Service[];
 	createdAt?: string;
 	updatedAt?: string;
 };

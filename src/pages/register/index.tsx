@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Building2, UserRound } from "lucide-react";
-import { useForm } from "react-hook-form";
+import { useForm, useWatch } from "react-hook-form";
 import { Link, useNavigate } from "react-router-dom";
 import { z } from "zod";
 import Fox from "../../assets/fox.svg";
@@ -36,6 +36,7 @@ export function RegisterPage() {
     handleSubmit,
     setError,
     setValue,
+    control,
     formState: { errors, isSubmitting },
   } = useForm<RegisterForm>({
     resolver: zodResolver(registerSchema),
@@ -49,9 +50,20 @@ export function RegisterPage() {
     },
   });
 
+  const selectedAccountType = useWatch({
+    control,
+    name: "accountType",
+  });
+
   async function onSubmit(values: RegisterForm) {
+    const { confirmPassword, accountType, ...rest } = values;
+    void confirmPassword;
+
     try {
-      await api.post("/users", values);
+      await api.post("/users", {
+        ...rest,
+        role: accountType,
+      });
       navigate("/login", { replace: true });
     } catch (error) {
       const parsedError = toApiError(error);
@@ -125,6 +137,7 @@ export function RegisterPage() {
                     type="radio"
                     value="CLIENT"
                     className="peer sr-only"
+                    checked={selectedAccountType === "CLIENT"}
                     {...register("accountType")}
                   />
                   <UserRound className="h-5 w-5 transition-colors peer-checked:text-orange-600" />
@@ -138,6 +151,7 @@ export function RegisterPage() {
                     type="radio"
                     value="COMPANY_OWNER"
                     className="peer sr-only"
+                    checked={selectedAccountType === "COMPANY_OWNER"}
                     {...register("accountType")}
                   />
                   <Building2 className="h-5 w-5 transition-colors peer-checked:text-orange-600" />
@@ -164,7 +178,7 @@ export function RegisterPage() {
               placeholder="(99) 99999-9999"
               error={errors.phone?.message}
               onChange={(value) => {
-                if (typeof value === 'string') {
+                if (typeof value === "string") {
                   setValue("phone", value || "");
                 }
               }}
